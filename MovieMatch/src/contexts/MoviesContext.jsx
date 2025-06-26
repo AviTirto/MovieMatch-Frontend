@@ -8,7 +8,7 @@ export const MoviesProvider = ({ children }) => {
     const [match, setMatch] = useSessionStorage("match", null)
 
     return (
-        <MoviesContext.Provider value={{  }}>
+        <MoviesContext.Provider value={{ movies, setMovies, match, setMatch }}>
             {children}
         </MoviesContext.Provider>
     )

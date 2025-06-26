@@ -6,13 +6,16 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom';
 import { RoomProvider } from './contexts/RoomContext'
 import { UserProvider } from './contexts/UserContext.jsx'
+import { MoviesProvider } from './contexts/MoviesContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <RoomProvider>
         <UserProvider>
-          <App />
+          <MoviesProvider>
+            <App />
+          </MoviesProvider>
         </UserProvider>
       </RoomProvider>
     </BrowserRouter>

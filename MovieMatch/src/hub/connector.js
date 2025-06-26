@@ -1,5 +1,6 @@
 import * as signalR from '@microsoft/signalr'
 import { addRoomHandlers } from './roomHandlers';
+import { addGameHandlers } from './gameHandlers';
 
 const URL = "http://localhost:5253/hub";
 
@@ -13,10 +14,11 @@ class Connector {
             .build()
     }
 
-    static getInstance(roomContext, navigate) {
+    static getInstance(roomContext, moviesContext, navigate) {
         if (!Connector.instance) {
           Connector.instance = new Connector();
           addRoomHandlers(Connector.instance.connection, roomContext, navigate);
+          addGameHandlers(Connector.instance.connection, moviesContext, navigate);
         }
     
         return Connector.instance;
