@@ -1,64 +1,50 @@
-import React, { useState } from "react";
-import { useRoom } from "../contexts/RoomContext";
-import { useUser } from "../contexts/UserContext";
-import { useNavigate } from "react-router-dom";
-import { joinRoom } from "../signalr/roomActions";
+import { useRef, useEffect } from "react"
+import getInstance from "../hub/connector"
+import { CreateRoom } from "../hub/roomActions"
+import { useUser } from "../contexts/UserContext"
 
-function CreatePage() {
-  const { setRoomCode, setIsHost } = useRoom();
-  const { setUsername } = useUser();
+const CreatePageRoom = () => {
+  const connectorRef = useRef(null)
+  const usernameRef = useRef()
+  const { setUsername } = useUser()
 
-  const [hostName, setHostName] = useState("");
-  const [services, setServices] = useState([]); // add UI as needed
-  const [showType, setShowType] = useState("Movie");
+  useEffect(() => {
+    const setupConnection = async () => {
+      const connector = getInstance();
+      await connector.start();
+      connectorRef.current = connector;
+    };
 
-  const navigate = useNavigate();
+    setupConnection();
+  }, []); 
 
-  const handleSubmit = async (e) => {
+  const onCreate = async (e) => {
     e.preventDefault();
+    const username = usernameRef.current.value;
 
-    const payload = { hostName, services, showType };
+    if (!connectorRef.current) {
+      console.error("Connector is not ready yet.");
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:5253/api/room/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create room");
-      }
-
-      const data = await response.json();
-
-      // Set context state first
-      setRoomCode(data.code);
-      setUsername(hostName);
-      setIsHost(true);
-
-      // Then join SignalR room and wait for confirmation
-      await joinRoom(data.code, hostName);
-
-      // Navigate to lobby only after successful join
-      navigate("/lobby");
-    } catch (error) {
-      alert(error.message);
+      await CreateRoom(connectorRef.current.connection, username, 0, []);
+      setUsername(username)
+    } catch (err) {
+      console.error("Failed to create room:", err);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Host Name"
-        value={hostName}
-        onChange={(e) => setHostName(e.target.value)}
-        required
-      />
-      {/* Add services and showType UI here */}
-      <button type="submit">Create Room</button>
-    </form>
-  );
+    <div>
+      <h1>Create Room</h1>
+      <form>
+        <input type="text" ref={usernameRef}/>
+        <button onClick={onCreate}>Create</button>
+      </form>
+    </div>
+
+  )
 }
 
-export default CreatePage;
+export default CreatePageRoom

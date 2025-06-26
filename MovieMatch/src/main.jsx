@@ -3,9 +3,18 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App.jsx'
+import { BrowserRouter } from 'react-router-dom';
+import { RoomProvider } from './contexts/RoomContext'
+import { UserProvider } from './contexts/UserContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <RoomProvider>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </RoomProvider>
+    </BrowserRouter>
   </StrictMode>,
 )

@@ -1,68 +1,53 @@
-import React, { useState } from "react";
-import { useRoom } from "../contexts/RoomContext";
+import { useRef, useEffect } from "react"
+import getInstance from "../hub/connector";
+import { JoinRoom } from "../hub/roomActions";
 import { useUser } from "../contexts/UserContext";
-import { useNavigate } from "react-router-dom";
-import { joinRoom } from "../signalr/roomActions";
 
-function JoinPage() {
-  const { setRoomCode, setIsHost } = useRoom();
-  const { setUsername } = useUser();
+const JoinRoomPage = () => {
+    const connectorRef = useRef(null)
+    const roomCodeRef = useRef()
+    const usernameRef = useRef()
+    const { setUsername } = useUser()
 
-  const [roomCodeInput, setRoomCodeInput] = useState("");
-  const [userNameInput, setUserNameInput] = useState("");
-
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch(
-        `http://localhost:5253/api/room/${roomCodeInput}/join`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: userNameInput }),
+    useEffect(() => {
+        const setupConnection = async () => {
+            const connector = getInstance();
+            await connector.start();
+            connectorRef.current = connector;
         }
-      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to join room");
-      }
+        setupConnection();
+    }, [])
 
-      // Set context state first
-      setRoomCode(roomCodeInput);
-      setUsername(userNameInput);
-      setIsHost(false);
+    const onJoin = async (e) => {
+        e.preventDefault()
 
-      // Then join SignalR room and wait for confirmation
-      await joinRoom(roomCodeInput, userNameInput);
+        if(!connectorRef.current) {
+            console.log("Connector is not ready yet.")
+            return;
+        }
 
-      // Navigate to lobby only after successful join
-      navigate("/lobby");
-    } catch (error) {
-      alert(error.message);
+        try {
+            await JoinRoom(connectorRef.current.connection, roomCodeRef.current.value, usernameRef.current.value)
+            setUsername(usernameRef.current.value)
+        } catch(err) {
+            console.log("Failed to join room:", err)
+        }
     }
-  };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Room Code"
-        value={roomCodeInput}
-        onChange={(e) => setRoomCodeInput(e.target.value.toUpperCase())}
-        required
-      />
-      <input
-        placeholder="User Name"
-        value={userNameInput}
-        onChange={(e) => setUserNameInput(e.target.value)}
-        required
-      />
-      <button type="submit">Join Room</button>
-    </form>
-  );
+    return (
+        <div>
+            <h1>Join Room</h1>
+            <form>
+                <label htmlFor="username">Username:</label>
+                <input id="username" type="text" ref={usernameRef}/>
+                <label htmlFor="roomcode">Room Code:</label>
+                <input id="roomcode" type="text" ref={roomCodeRef}/>
+                <button onClick={onJoin}>Join</button>
+            </form>
+        </div>
+        
+    )
 }
 
-export default JoinPage;
+export default JoinRoomPage;
