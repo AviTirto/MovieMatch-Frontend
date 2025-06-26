@@ -1,5 +1,5 @@
 import * as signalR from '@microsoft/signalr'
-import { addRoomHandlers } from './roomHandler';
+import { addRoomHandlers } from './roomHandlers';
 
 const URL = "http://localhost:5253/hub";
 
