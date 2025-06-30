@@ -15,6 +15,7 @@ export function addRoomHandlers(
 
     connection.on("RoomJoined", (roomCode) => {
         setRoomCode(roomCode)
+        setIsHost(false)
         navigate("/lobby")
     })
 

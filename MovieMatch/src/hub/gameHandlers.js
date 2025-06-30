@@ -12,7 +12,10 @@ export function addGameHandlers(
     })
 
     connection.on("RecieveMovies", (movies) => {
-        setMovies(prevMovies => [...prevMovies, ...movies]);
+        setMovies(prevMovies => {
+            console.log("Previous:", prevMovies?.length, "Incoming:", movies.length);
+            return [...(prevMovies ?? []), ...movies]
+        });
     })
 
     connection.on("MatchFound", (movie) => {

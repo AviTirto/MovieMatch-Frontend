@@ -36,14 +36,14 @@ const JoinRoomPage = () => {
     }
 
     return (
-        <div>
-            <h1>Join Room</h1>
-            <form>
-                <label htmlFor="username">Username:</label>
-                <input id="username" type="text" ref={usernameRef}/>
-                <label htmlFor="roomcode">Room Code:</label>
-                <input id="roomcode" type="text" ref={roomCodeRef}/>
-                <button onClick={onJoin}>Join</button>
+        <div className="shadow-lg p-10 rounded-lg">
+            <h1>Join a Room!</h1>
+            <form className="flex flex-col space-y-2">
+                <label htmlFor="username">Username</label>
+                <input className="bg-white border-b-2 border-black" id="username" type="text" ref={usernameRef}/>
+                <label htmlFor="roomcode">Room Code</label>
+                <input className="bg-white border-b-2 border-black" id="roomcode" type="text" ref={roomCodeRef}/>
+                <button className="bg-sky-500 rounded-lg" onClick={onJoin}>Join</button>
             </form>
         </div>
         

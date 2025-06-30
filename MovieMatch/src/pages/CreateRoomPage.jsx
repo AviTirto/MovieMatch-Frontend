@@ -36,11 +36,12 @@ const CreatePageRoom = () => {
   };
 
   return (
-    <div>
-      <h1>Create Room</h1>
-      <form>
-        <input type="text" ref={usernameRef}/>
-        <button onClick={onCreate}>Create</button>
+    <div className="shadow-lg rounded-lg p-10">
+      <h1>Create New Room!</h1>
+      <form className="flex flex-col space-y-2">
+        <label htmlFor="username">Username</label>
+        <input className="bg-white border-b-2 border-black" id="username" type="text" ref={usernameRef}/>
+        <button onClick={onCreate} className="rounded-lg bg-lime-500 shadow-lg">Create</button>
       </form>
     </div>
 
